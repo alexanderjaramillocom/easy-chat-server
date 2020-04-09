@@ -1,0 +1,33 @@
+{
+  "name": "easy-chat-server",
+  "version": "0.1.0",
+  "description": "an easy chat in js using sockets with socket.io",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexanderjaramillocom/easy-chat-server.git"
+  },
+  "keywords": [
+    "easy",
+    "chat",
+    "http",
+    "sockets",
+    "js",
+    "nodejs",
+    "socket",
+    "io"
+  ],
+  "author": {
+    "name": "Alexander Jaramillo",
+    "email": "contacto@alexanderjaramillo.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexanderjaramillocom/easy-chat-server/issues"
+  },
+  "homepage": "https://github.com/alexanderjaramillocom/easy-chat-server#readme",
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  }
+}
