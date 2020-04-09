@@ -1,27 +1,49 @@
 "use strict";
 
-const chatManager = {
-  callbacks: {
-    userConnected: [],
-    userDisconnected: [],
-  },
-  subscribe: {
-    userConnected: cb => chatManager.callbacks.userConnected.push(cb),
-    userDisconnected: cb => chatManager.callbacks.userDisconnected.push(cb)
-  }
-};
+/** *********************************************************
+ * Manageable events
+ */
+const events = ['userConnected', 'userDisconnected'];
 
-const notify = {
-  userConnected: (msg) => 
-    chatManager.callbacks.userConnected.forEach(cb => cb(msg)),
-  userDisconnected: (msg) => 
-    chatManager.callbacks.userDisconnected.forEach(cb => cb(msg)),
-}
+/** *********************************************************
+ * Callback array for each event
+ */
+const callbacks = events.reduce((obj, event) => {
+  /* callbacks.userConnected: [] */
+  obj[event] = [];
+  return obj;
+}, {});
+
+/** *********************************************************
+ * Notify each callback for an event
+ */
+const notify = events.reduce((obj, event) => {
+  /**
+    notify.userConnected: (msg) => 
+      callbacks.userConnected.forEach(cb => cb(msg)),
+   */
+  obj[event] = (msg) => 
+    callbacks[event].forEach(cb => cb(msg));
+  return obj;
+}, {});
+
+/**
+ * All methods and variables manageable from library
+ */
+const chatManager = {
+  events,
+  subscribe: events.reduce((obj, event) => {
+    /* subscribe.userConnected: cb => callbacks.userConnected.push(cb) */
+    obj[event] = cb => callbacks[event].push(cb);
+    return obj;
+  }, {})
+};
 
 module.exports = (http) => {
   const io = require("socket.io")(http);
 
   io.on("connection", (socket) => {
+    
     notify.userConnected(socket.id);
     socket.on("disconnect", () => {
       notify.userDisconnected(socket.id);
