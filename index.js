@@ -36,7 +36,8 @@ const chatManager = {
     /* subscribe.userConnected: cb => callbacks.userConnected.push(cb) */
     obj[event] = cb => callbacks[event].push(cb);
     return obj;
-  }, {})
+  }, {}),
+  users: {}
 };
 
 module.exports = (http) => {
@@ -45,24 +46,30 @@ module.exports = (http) => {
   io.on("connection", (socket) => {
     
     notify.userConnected(socket.id);
+
+    emit(socket, {id: socket.id, payload: ['nickname']}, "who are you?");
+    socket.on("I am", ({nickname, id}) => {
+      chatManager.users[id] = {nickname, messages: []};
+      broadcastEmit(`${nickname} has logged`)
+    });
+
     socket.on("disconnect", () => {
       notify.userDisconnected(socket.id);
     });
-    socket.on("chat message", (msg) => {
+    socket.on("public message", (msg) => {
       console.log("message: " + msg);
       emit(socket, msg);
-      broadcastEmit("hi to everyone");
     });
   });
 
-  const emit = (socket, msg) => {
+  const emit = (socket, msg, type = "public message") => {
     console.log("emit -> socket, msg", socket.id, msg);
-    socket.emit("chat message", msg);
+    socket.emit(type, msg);
   };
 
-  const broadcastEmit = (msg) => {
+  const broadcastEmit = (msg, type = "public message") => {
     console.log("broadcastEmit -> msg", msg);
-    io.emit("chat message", msg);
+    io.emit(type, msg);
   };
 
   return {...chatManager, io};
